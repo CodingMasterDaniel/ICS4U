@@ -12,40 +12,43 @@ public class NQueens {
 		Scanner input = new Scanner(System.in);
 		System.out.println("Please input a number: ");
 		n = Integer.parseInt(input.nextLine());
-		Queen tempQueen = null;
 		int filled = 0;
+		int col = 0;
 		boolean solvable = true;
 
 		while (filled < n && solvable) {
-			if (filled == 0 && tempQueen == null || queens.peek() == tempQueen)
-				tempQueen = new Queen(filled, 0);
-
-			if (!conflict(tempQueen)) {
-				filled++;
-				queens.push(tempQueen);
-			} else if (tempQueen.getCol() < n - 1) {
-				tempQueen.setCol(tempQueen.getCol() + 1);
-			} else {
-				if (tempQueen.getCol() >= n - 1) {
-					if (!queens.isEmpty()) {
-						tempQueen = queens.pop();
-						tempQueen.setCol(tempQueen.getCol() + 1);
-						filled--;
-					} else {
-						System.out.println("Unsolvable");
-						solvable = false;
-					}
+			
+			Queen tempQueen = new Queen(filled, col);
+			
+			if (col >= n) {
+				if (!queens.isEmpty()) {
+					tempQueen = queens.pop();
+					col = tempQueen.getCol() + 1;
+					filled--;
+				} else {
+					System.out.println("Unsolvable");
+					solvable = false;
 				}
+			} else if (conflict(tempQueen)) {
+					col++;
+				
+			} else {
+				
+				filled++;
+				col = 0;
+				queens.push(tempQueen);
 			}
 			
 			if (filled == n) {
 				displayBoard();
 			}
+			 
+
 			
 		}
 
 		input.close();
-		
+
 
 	}
 
@@ -58,7 +61,9 @@ public class NQueens {
 			}
 		}
 		
-		for (int i = 0; i < queens.size(); i++) {
+		int size = queens.size();
+		
+		for (int i = 0; i < size; i++) {
 			Queen temp = queens.pop();
 			int x = temp.getRow();
 			int y = temp.getCol();
