@@ -2,6 +2,8 @@ package com.bayviewglen.unitTwo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,8 +12,9 @@ import java.util.Scanner;
 public class AddressBook {
 	
 	private static ArrayList<Contact> addressBook = new ArrayList<Contact>();
+	private static int bookNumber = 0;
 	
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException {
 		Scanner input = new Scanner(System.in);
 		Scanner load1 = new Scanner(new File("input/AddressBooks/AddressBook1"));
 		Scanner load2 = new Scanner(new File("input/AddressBooks/AddressBook2"));
@@ -28,9 +31,10 @@ public class AddressBook {
 					String ln = y.substring(0, y.indexOf(" "));
 					String fn = y.substring(y.indexOf(" ") + 1, y.indexOf(","));
 					String phoneNumber = y.substring(y.indexOf(",") + 1);
-					addContact(ln, fn, phoneNumber);
+					addressBook.add(new Contact(ln, fn, phoneNumber));
 				}
 				System.out.println("Address Book #1 loaded.");
+				bookNumber = 1;
 				validInput = true;
 			}else if (x.equals("2")) {
 				while (load2.hasNextLine()) {
@@ -38,9 +42,10 @@ public class AddressBook {
 					String ln = y.substring(0, y.indexOf(" "));
 					String fn = y.substring(y.indexOf(" ") + 1, y.indexOf(","));
 					String phoneNumber = y.substring(y.indexOf(",") + 1);
-					addContact(ln, fn, phoneNumber);
+					addressBook.add(new Contact(ln, fn, phoneNumber));
 				}
 				System.out.println("Address Book #2 loaded.");
+				bookNumber = 2;
 				validInput = true;
 			}else{
 				System.out.println("Please enter a correct address book number.");
@@ -57,10 +62,11 @@ public class AddressBook {
 			System.out.println("3. Delete");
 			System.out.println("4. Display");
 			System.out.println("5. Quit");
+			System.out.println("6. Save");
 			
 			String x = input.nextLine();
 			
-			if (x.equals("4") || x.equals("Quit")) {
+			if (x.equals("5") || x.equals("Quit")) {
 				done = true;
 			} else if (x.equals("1") || x.equals("Search")) {
 				System.out.println("Search generally (1) or search specifically (2)?");
@@ -101,6 +107,8 @@ public class AddressBook {
 				delete(a, b, c);
 			} else if (x.equals("4") || x.equals("Display")) {
 				displayContact();
+			} else if (x.equals("6") || x.equals("Save")) {
+				save();
 			} else {
 				System.out.println("Wrong action input.");
 			}
@@ -172,6 +180,31 @@ public class AddressBook {
 		
 		if (a == addressBook.size())
 			System.out.println("No such contact found.");
+	}
+	
+	private static void save() throws IOException {
+		FileWriter print = null;
+		if (bookNumber == 1) {
+			print = new FileWriter("input/AddressBooks/AddressBook1");
+		} else if (bookNumber == 2) {
+			print = new FileWriter("input/AddressBooks/AddressBook2");
+		} else {
+			System.out.println("There is no address book to save to.");
+		}
+		
+		String newLine = System.getProperty("line.separator");
+		for (int i = 0; i < addressBook.size(); i++) {
+			Contact temp = addressBook.get(i);
+			String x = temp.getLname();
+			String y = temp.getFname();
+			String z = temp.getPhone();
+			
+			String output = x + " " + y + "," + z;
+			print.write(output + newLine);
+		}
+		
+		System.out.println("Address Book saved successfully!");
+		print.close();
 	}
 
 }
